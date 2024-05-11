@@ -9,7 +9,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser')
 
-const csp = require('express-csp')
+const cors = require('cors');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -30,78 +30,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Set security HTTP headers
 app.use(helmet.contentSecurityPolicy({
   directives: {
-    defaultSrc: ["'self'", 'https:', 'http:', 'data:', 'ws:'],
-    baseUri: ["'self'"],
-    fontSrc: ["'self'", 'https:', 'http:', 'data:'],
-    scriptSrc: ["'self'", "trusted-cdn.com", 'https:', 'http:', 'blob:'],
-    styleSrc: ["'self'", "'unsafe-inline'", 'https:', 'http:'],
-  },
+    connectSrc: ["'self'", "data:", "blob:", "https://*.stripe.com", "https://*.mapbox.com", "https://*.cloudflare.com", "https://bundle.js:*", "ws://localhost:*"],
+    defaultSrc: ["'self'"],
+    frameAncestors: ["'self'"],
+    fontSrc: ["'self'", "https://fonts.gstatic.com"],
+    frameSrc: ["'self'", "data:", "blob:", "https://*.stripe.com", "https://*.mapbox.com", "https://*.cloudflare.com", "https://bundle.js:*", "ws://localhost:*"],
+    imgSrc: ["'self'", "data:", "blob:", "https://*.stripe.com", "https://*.mapbox.com", "https://*.cloudflare.com", "https://bundle.js:*", "ws://localhost:*"],
+    scriptSrc: ["'self'", "'nonce-rAnd0m'", "data:", "blob:", "https://js.stripe.com", "https://*.mapbox.com", "https://*.cloudflare.com", "https://bundle.js:8828", "ws://localhost:*"],
+    styleSrc: ["'self'", "'nonce-rAnd0m'"],
+    workerSrc: ["'self'", "'nonce-rAnd0m'", "data:", "blob:", "https://*.stripe.com", "https://*.mapbox.com", "https://*.cloudflare.com", "https://bundle.js:*", "ws://localhost:*"],
+  }
 }))
-csp.extend(app, {
-  policy: {
-    directives: {
-      'default-src': ['self'],
-      'style-src': ['self', 'unsafe-inline', 'https:'],
-      'font-src': ['self', 'https://fonts.gstatic.com'],
-      'script-src': [
-        'self',
-        'unsafe-inline',
-        'data',
-        'blob',
-        'https://js.stripe.com',
-        'https://*.mapbox.com',
-        'https://*.cloudflare.com/',
-        'https://bundle.js:8828',
-        'ws://localhost:56558/',
-      ],
-      'worker-src': [
-        'self',
-        'unsafe-inline',
-        'data:',
-        'blob:',
-        'https://*.stripe.com',
-        'https://*.mapbox.com',
-        'https://*.cloudflare.com/',
-        'https://bundle.js:*',
-        'ws://localhost:*/',
-      ],
-      'frame-src': [
-        'self',
-        'unsafe-inline',
-        'data:',
-        'blob:',
-        'https://*.stripe.com',
-        'https://*.mapbox.com',
-        'https://*.cloudflare.com/',
-        'https://bundle.js:*',
-        'ws://localhost:*/',
-      ],
-      'img-src': [
-        'self',
-        'unsafe-inline',
-        'data:',
-        'blob:',
-        'https://*.stripe.com',
-        'https://*.mapbox.com',
-        'https://*.cloudflare.com/',
-        'https://bundle.js:*',
-        'ws://localhost:*/',
-      ],
-      'connect-src': [
-        'self',
-        'unsafe-inline',
-        'data:',
-        'blob:',
-        // 'wss://<HEROKU-SUBDOMAIN>.herokuapp.com:<PORT>/',
-        'https://*.stripe.com',
-        'https://*.mapbox.com',
-        'https://*.cloudflare.com/',
-        'https://bundle.js:*',
-        'ws://localhost:*/',
-      ],
-    },
-  },
-});
+
+app.use(cors({
+  origin: ['https://api.mapbox.com/mapbox-gl-js/v0.54.0/mapbox-gl.js', 'https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js'] // Replace with your allowed domain
+}));
 
 // Development logging
 if (process.env.NODE_ENV === 'development') {
