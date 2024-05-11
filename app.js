@@ -42,9 +42,7 @@ app.use(helmet.contentSecurityPolicy({
   }
 }))
 
-app.use(cors({
-  origin: ['https://api.mapbox.com/mapbox-gl-js/v0.54.0/mapbox-gl.js', 'https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js'] // Replace with your allowed domain
-}));
+app.use(cors(false));
 
 // Development logging
 if (process.env.NODE_ENV === 'development') {
