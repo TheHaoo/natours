@@ -27,19 +27,12 @@ app.set('views', path.join(__dirname, 'views'))
 // 1) MIDDLEWARE
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
-// Set security HTTP headers
-// app.use(helmet.contentSecurityPolicy({
-//   directives: {
-//     defaultSrc: ["'self'", 'https:', 'http:', 'data:', 'ws:'],
-//     baseUri: ["'self'"],
-//     fontSrc: ["'self'", 'https:', 'http:', 'data:'],
-//     scriptSrc: ["'self'", "trusted-cdn.com", 'https:', 'http:', 'blob:'],
-//     styleSrc: ["'self'", "'unsafe-inline'", 'https:', 'http:'],
-//   },
-// }))
 
 app.use(helmet.contentSecurityPolicy({
   directives: {
+    connectSrc: ["'self'", "data:", "blob:", "https://*.stripe.com", "https://*.mapbox.com", "https://*.cloudflare.com", "https://bundle.js:*", "ws://localhost:*"],
+    frameSrc: ["'self'", "data:", "blob:", "https://*.stripe.com", "https://*.mapbox.com", "https://*.cloudflare.com", "https://bundle.js:*", "ws://localhost:*"],
+    scriptSrc: ["'self'", "'nonce-rAnd0m'", "data:", "blob:", "https://cdnjs.cloudflare.com", "https://bundle.js:8828", "ws://localhost:*"],
     defaultSrc: ["'self'"],
     baseUri: ["'self'"],
     fontSrc: ["'self'", "https://fonts.gstatic.com"],
@@ -47,7 +40,6 @@ app.use(helmet.contentSecurityPolicy({
     frameAncestors: ["'self'"],
     imgSrc: ["'self'", "ws://localhost:*"],
     objectSrc: ["'none'"],
-    scriptSrc: ["'self'"],
     scriptSrcAttr: ["'none'"],
     styleSrc: ["'self'", "'nonce-rAnd0m'"],
     upgradeInsecureRequests: []
@@ -56,6 +48,7 @@ app.use(helmet.contentSecurityPolicy({
 
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Access-Control-Allow-Origin', 'https://cdnjs.cloudflare.com');
   next();
 });
 
